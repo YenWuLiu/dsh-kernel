@@ -1,0 +1,31 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib/types"
+  },
+  "include": [
+    "src"
+  ],
+  "references": [
+    { "path": "../../vendor/cordis" },
+    { "path": "../../vendor/loader" },
+    { "path": "../../vendor/include" },
+    { "path": "../../vendor/schemastery" },
+    { "path": "../../packages/boot/app-boot" },
+    { "path": "../../packages/boot/cmdline" },
+    { "path": "../../packages/bundle/base" },
+    { "path": "../../packages/core/agent" },
+    { "path": "../../packages/core/agent-default-model" },
+    { "path": "../../packages/core/chat-agent" },
+    { "path": "../../packages/core/session" },
+    { "path": "../../packages/core/tools" },
+    { "path": "../../packages/attachment/attachment" },
+    { "path": "../../packages/interaction/user-approval" },
+    { "path": "../../packages/llm/llm" },
+    { "path": "../../packages/util/brand" },
+    { "path": "../../packages/util/home-paths" },
+    { "path": "../../packages/util/http-proxy" },
+    { "path": "../../packages/util/launch-environment" }
+  ]
+}

@@ -1,3 +1,7 @@
-node_modules/
+﻿node_modules/
 lib/
+dist/
+*.tsbuildinfo
 *.log
+.DS_Store
+Thumbs.db

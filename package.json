@@ -1,0 +1,41 @@
+{
+  "name": "@deepseek-ai/dsh-kernel-root",
+  "version": "0.1.2-rc.1",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "workspaces": [
+    "vendor/*",
+    "packages/*/*",
+    "native/landlock-run/packages/*",
+    "apps/cli"
+  ],
+  "scripts": {
+    "build": "npm run build:lib:host",
+    "build:lib:host": "node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc -b tsconfig.host.json && tsdown --env.DSH_BUILD_FACE host",
+    "clean": "tsx scripts/clean.ts",
+    "gen-tsconfig-paths": "tsx scripts/gen-tsconfig-paths.ts",
+    "verify-tsconfig-paths": "tsx scripts/gen-tsconfig-paths.ts --check",
+    "typecheck": "npm run build:lib:host",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "dsh": "node --import tsx/esm apps/cli/src/bin.ts"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.20.0",
+    "@vitest/coverage-v8": "^4.1.8",
+    "execa": "^10.0.0",
+    "fast-check": "^4.8.0",
+    "js-yaml": "^4.2.0",
+    "tsdown": "^0.22.2",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.8"
+  }
+}

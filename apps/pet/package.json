@@ -1,0 +1,39 @@
+{
+  "name": "@deepseek-ai/dsh-pet-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Kernel-native desktop pet: dsh-pet's animated desktop shell driven by the dsh kernel agent with pwsh computer-management tools",
+  "type": "module",
+  "scripts": {
+    "start": "node --import tsx/esm src/bin.ts"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@deepseek-ai/cordis": "workspace:^",
+    "@deepseek-ai/cordis-plugin-include": "workspace:^",
+    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@deepseek-ai/schemastery": "workspace:^",
+    "@deepseek-ai/dsh-agent": "workspace:^",
+    "@deepseek-ai/dsh-agent-default-model": "workspace:^",
+    "@deepseek-ai/dsh-app-boot": "workspace:^",
+    "@deepseek-ai/dsh-attachment": "workspace:^",
+    "@deepseek-ai/dsh-base": "workspace:^",
+    "@deepseek-ai/dsh-brand": "workspace:^",
+    "@deepseek-ai/dsh-chat-agent": "workspace:^",
+    "@deepseek-ai/dsh-cmdline": "workspace:^",
+    "@deepseek-ai/dsh-home-paths": "workspace:^",
+    "@deepseek-ai/dsh-http-proxy": "workspace:^",
+    "@deepseek-ai/dsh-launch-environment": "workspace:^",
+    "@deepseek-ai/dsh-llm": "workspace:^",
+    "@deepseek-ai/dsh-session": "workspace:^",
+    "@deepseek-ai/dsh-tools": "workspace:^",
+    "@deepseek-ai/dsh-user-approval": "workspace:^",
+    "koffi": "^3.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.0",
+    "electron": "^33.4.0",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}
