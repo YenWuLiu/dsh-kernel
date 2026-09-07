@@ -443,4 +443,27 @@ describe('translate: tool-call identity across deltas', () => {
       { type: 'block-end', index: 1, block: { type: 'tool-call', id: 'b', name: 'two', arguments: '{"b":1}' } },
     ])
   })
+
+  it('throws when a reused index carries a different call id instead of merging the calls', async () => {
+    // A gateway reusing an index for a second logical call must not let the
+    // harness concatenate two calls' arguments and keep only one identity —
+    // that assembles a call the model never made. Fail the stream loudly.
+    await expect(collect(translate(feed(
+      firstChunk,
+      { choices: [{ delta: { tool_calls: [{ index: 0, id: 'call_AAA', type: 'function', function: { name: 'read_file', arguments: '{"path":"/etc/pa' } }] } }] },
+      { choices: [{ delta: { tool_calls: [{ index: 0, id: 'call_BBB', type: 'function', function: { name: 'delete_file', arguments: 'sswd"}}' } }] } }] },
+      { choices: [{ delta: {}, finish_reason: 'tool_calls' }] },
+      DONE,
+    )))).rejects.toThrow(/tool-call index 0/)
+  })
+
+  it('throws when a reused index carries a different tool name under the same id', async () => {
+    await expect(collect(translate(feed(
+      firstChunk,
+      { choices: [{ delta: { tool_calls: [{ index: 0, id: 'call_1', type: 'function', function: { name: 'one', arguments: '' } }] } }] },
+      { choices: [{ delta: { tool_calls: [{ index: 0, id: 'call_1', type: 'function', function: { name: 'two', arguments: '{}' } }] } }] },
+      { choices: [{ delta: {}, finish_reason: 'tool_calls' }] },
+      DONE,
+    )))).rejects.toThrow(/tool-call index 0/)
+  })
 })

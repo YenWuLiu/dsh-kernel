@@ -86,6 +86,27 @@ function acceptIdentity(current: string | undefined, incoming: unknown): string 
   return typeof incoming === 'string' && incoming.length > 0 ? incoming : current
 }
 
+/**
+ * Reject a conflicting identity on an index already claimed by a call. The
+ * wire keys parallel calls by `index`; a gateway that reuses one index for a
+ * second logical call would otherwise let the assembler concatenate both
+ * calls' arguments and keep only one identity — executing a call the model
+ * never made. A conflicting non-empty value fails the stream loudly; absent,
+ * empty, and repeated values remain "no update".
+ * @param current - the identity established by an earlier delta of this call.
+ * @param incoming - the field as parsed from this delta.
+ * @param index - the wire index the conflicting delta arrived on.
+ * @param field - which identity field conflicted, for the error message.
+ */
+function assertIdentityStable(current: string | undefined, incoming: unknown, index: number, field: 'id' | 'name'): void {
+  if (typeof incoming === 'string' && incoming.length > 0 && current !== undefined && incoming !== current) {
+    throw new LlmError(
+      `tool-call index ${index} reused with a different ${field} (${JSON.stringify(incoming)} after ${JSON.stringify(current)}): the provider is interleaving two calls on one index`,
+      'MALFORMED_RESPONSE',
+    )
+  }
+}
+
 /** Assemble the final ContentBlock for one open block. */
 function closeBlock(block: OpenBlock): ContentBlock {
   switch (block.kind) {
@@ -181,6 +202,8 @@ export async function* translate(payloads: AsyncIterable<string>): AsyncGenerato
           toolBlocks.set(call.index, block)
           yield { type: 'block-start', index: block.index, blockType: 'tool-call' }
         }
+        assertIdentityStable(block.callId, call.id, call.index, 'id')
+        assertIdentityStable(block.name, call.function?.name, call.index, 'name')
         block.callId = acceptIdentity(block.callId, call.id)
         block.name = acceptIdentity(block.name, call.function?.name)
         const fragment = call.function?.arguments ?? ''
