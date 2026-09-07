@@ -54,6 +54,22 @@ export type {
 /** Settings namespace carrying the user's chosen default preset. */
 export const SETTINGS_NAMESPACE = 'agent-presets'
 
+/**
+ * Preset ids retired by a rename, keyed to the id that replaced each one.
+ *
+ * A released Session log records the creation-time preset id in its header
+ * and in `agent-preset/selected` events, and the adjacent-migration contract
+ * carries that vocabulary forward verbatim. A session created before a rename
+ * therefore still asks for the old id on resume; without this map every such
+ * session fails with `agent-preset/not-found` although its composition still
+ * ships under the new name. The roster never lists a retired id — it only
+ * answers a lookup for one with its successor.
+ */
+export const LEGACY_PRESET_IDS: Readonly<Record<string, string>> = {
+  // 2026-08-25: "rename code-mode to ptc (PTC mode)" renamed the shipped preset.
+  code: 'ptc',
+}
+
 /** Refuse an empty preset id before invoking a domain operation. */
 function validatePresetId(value: string, field: 'agentPreset' | 'from'): void {
   if (value.length === 0) {
@@ -344,15 +360,23 @@ export class AgentPresets extends TypertRemoteService {
     const wanted = id ?? this.defaultId
     const presets = await this.list()
     const found = presets.find(preset => preset.id === wanted)
-    if (found === undefined) {
-      const available = presets.map(preset => preset.id)
-      throw new RemoteError(
-        'agent-preset/not-found',
-        `agent-presets: preset "${wanted}" not found (available: ${available.join(', ') || 'none'})`,
-        { agentPreset: wanted, available },
-      )
-    }
-    return found
+    if (found !== undefined) return found
+
+    // A retired id resolves to its successor, so sessions logged before a
+    // rename keep resuming. Only a configured root may still supply the old id
+    // (first-root-wins above), so the successor is consulted after the roots.
+    const successor = LEGACY_PRESET_IDS[wanted]
+    const renamed = successor === undefined
+      ? undefined
+      : presets.find(preset => preset.id === successor)
+    if (renamed !== undefined) return renamed
+
+    const available = presets.map(preset => preset.id)
+    throw new RemoteError(
+      'agent-preset/not-found',
+      `agent-presets: preset "${wanted}" not found (available: ${available.join(', ') || 'none'})`,
+      { agentPreset: wanted, available },
+    )
   }
 
   /**
