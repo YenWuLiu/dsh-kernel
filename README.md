@@ -1,5 +1,9 @@
 # dsh-kernel
 
+[![Upstream](https://img.shields.io/badge/upstream-deepseek--ai%2Fdeepseek--harness-0969da)](https://github.com/deepseek-ai/deepseek-harness)
+[![Base](https://img.shields.io/badge/base-dsh--v0.1.2--rc.1-blue)](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.1.2-rc.1)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 DeepSeek Harness 的**内核裁剪版**：从上游 monorepo（deepseek-ai/deepseek-harness@master，0.1.2-rc.1）中保留 Agent 运行时闭包（151 个包），删除 Web 外壳、浏览器 UI、实验包与外部协议适配（116 个包）。分层与组合机制与上游完全一致，可作为二次开发的基座。
 
 > 裁剪明细（保留/删除清单、理由、根配置改动）见 [KERNEL.md](KERNEL.md)；上游原始 README 见 [README.upstream.md](README.upstream.md)。
